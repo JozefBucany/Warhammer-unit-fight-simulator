@@ -6,7 +6,7 @@ from armies.gk import (
     StrikeSquad,
     Terminator,
 )
-from func.attack import melee, shoot
+from func.attack import attack
 
 
 def main():
@@ -18,25 +18,15 @@ def main():
     y = Terminator ("psycannon")
 
 
-    print(a)
-    print("")
-    print(b)
-    print("")
-    print(c)
-    print("")
-    print(d)
-    print("")
-    print(x)
-    print("")
-    print(y)
-    print("")
+    print(f"{a}\n")
+    print(f"{b}\n")
+    print(f"{c}\n")
+    print(f"{d}\n")
+    print(f"{x}\n")
+    print(f"{y}\n")
 
 
-    shoot(a,b)
-    melee(a,b)
+    attack(a,b)
 
-
-
-    return
 
 main()

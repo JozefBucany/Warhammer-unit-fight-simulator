@@ -1,15 +1,15 @@
 import random
 
 
-def shoot(unit, target):
+def attack(unit: object, target:object):
     x = 0
 
-    for i in range(0, unit.shots*5):
+    for i in range(unit.shots*5):
         hit=random.randint(1,6)
         if hit >= unit.BS:
             x+=unit.ranged_dmg
 
-    print(f"5 man unit of {unit.name} deals {x} damage to unit {target.name}")
+    print(f"5 man unit of {unit.name} deals {x} damage to unit {target.name} with shooting attacks.\n")
 
 # 5-unit.amount-unit.apothecary
 # unit.amount
@@ -25,10 +25,6 @@ def shoot(unit, target):
 
 
 
-    return
-
-
-def melee(unit, target):
     x = 0
 
     for i in range(0, unit.attacks*5):
@@ -36,7 +32,7 @@ def melee(unit, target):
         if hit >= unit.WS:
             x+=unit.melee_dmg
 
-    print(f"5 man unit of {unit.name} deals {x} damage to unit {target.name}")
+    print(f"5 man unit of {unit.name} deals {x} damage to unit {target.name} with melee attacks.")
 
 # unit.melee_str
 # unit.melee_ap
@@ -45,7 +41,3 @@ def melee(unit, target):
 
 # target.toughness
 # target.save
-
-
-
-    return
