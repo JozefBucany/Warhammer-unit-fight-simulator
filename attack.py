@@ -35,7 +35,20 @@ def deal_damage(unit, target, dmg, x,y,z, verbose = False):
         y = dmg
     return x,y,z
 
-def do_it(unit, target, x=0, y=0, z=0, melee=None, strike=False, hazards = None, dead = None,verbose = False):
+def libi_buff(target, dmg,verbose = False):
+    x = 0
+    for i in range (dmg):
+        roll = random.randint(1,6)
+        if roll < target.fnpp:
+            if verbose:
+                print("i feel pain...")
+            x += 1
+        else:
+            if verbose:
+                print("i feel no pain!")
+    return x
+
+def do_it(unit, target, x=0, y=0, z=0, melee=False, strike=False, hazards = None, dead = None,verbose = False):
     if y == 0:
         y = target.hp
     crit = False
@@ -71,7 +84,21 @@ def do_it(unit, target, x=0, y=0, z=0, melee=None, strike=False, hazards = None,
                     shots += random.randint(1, int(shoots.split("d")[1]))+ex
 
         if "rapid_fire" in wep[6]:
-            shots += wep[6]["rapid_fire"]*wep[0]
+            if type(wep[6]["rapid_fire"]) is int:
+                shots += (wep[6]["rapid_fire"])*wep[0]
+            else:
+                if len(wep[6]["rapid_fire"].split("+"))>1:
+                    shoots = wep[6]["rapid_fire"].split("+")[0]
+                    ex = int(wep[6]["rapid_fire"].split("+")[1])
+                else:
+                    shoots = wep[6]["rapid_fire"]
+                    ex = 0
+                if len(shoots.split("d")[0]) == 0:
+                    for i in range(0, wep[0]):
+                        shots += random.randint(1, int(shoots.split("d")[1]))+ex
+                else:
+                    for i in range(0, wep[0]*int(shoots.split("d")[0])):
+                        shots += random.randint(1, int(shoots.split("d")[1]))+ex
 
         if verbose:
             print(f"nonblast attacks: {shots}")
@@ -85,23 +112,33 @@ def do_it(unit, target, x=0, y=0, z=0, melee=None, strike=False, hazards = None,
 
         checks = 0
 
-        to_hit = wep[2]
-        if "heavy" in wep[6]:
-            to_hit = wep[2]-1
-            if to_hit <2:
-                to_hit = 2
-
-
         if wep[2] == "torrent":
             if verbose:
                 print("torrent hits automatically")
             hits = shots
         else:
+            to_hit = wep[2]
+            if "heavy" in wep[6]:
+                to_hit = wep[2]-1
+            if (melee is False and target.stealth == 1) or target.minushit is True:
+                to_hit += 1
+            if to_hit <2:
+                to_hit = 2
+
+            if verbose:
+                print(f"to_hit neeeded: {to_hit}")
             for i in range(0, shots):
                 crit = False
                 hit=random.randint(1,6)
+
                 if verbose:
                     print(f"rolled {hit} to hit")
+
+                if hit < to_hit and (("epic_h" in wep[6] or "epic_hw" in wep[6]) and "character" in target.kw):
+                    hit=random.randint(1,6)
+                    if verbose:
+                        print(f"rerolled into {hit}")
+
                 if hit == 1 and "hazardous" in wep[6]:
                     checks += 1
                 if hit == 6 or (hit > 3 and "conversion" in wep[6]):
@@ -172,27 +209,29 @@ def do_it(unit, target, x=0, y=0, z=0, melee=None, strike=False, hazards = None,
                 to_wound = wep[6]["anti_psyker"]
         if unit.aos:
             to_wound = wep[3]
-            if "anti-infantry" in wep[6] and "infantry" in target.kw:
-                wep[4] += 1
-            if "anti-hero" in wep[6] and "hero" in target.kw:
-                wep[4] += 1
-            if "anti-monster" in wep[6] and "monster" in target.kw:
-                wep[4] += 1
-            if "anti-cavalry" in wep[6] and "cavalry" in target.kw:
-                wep[4] += 1
-            if "anti-wizard" in wep[6] and "wizard" in target.kw:
-                wep[4] += 1
-            if "anti-priest" in wep[6] and "priest" in target.kw:
-                wep[4] += 1
-            if "anti-beast" in wep[6] and "beast" in target.kw:
-                wep[4] += 1
-            if "anti-war_machine" in wep[6] and "war_machine" in target.kw:
-                wep[4] += 1
-            if "anti-manifestation" in wep[6] and "manifestation" in target.kw:
-                wep[4] += 1
+            rend = wep[4]
+            if "anti_infantry" in wep[6] and "infantry" in target.kw:
+                rend += 1
+            if "anti_hero" in wep[6] and "hero" in target.kw:
+                rend += 1
+            if "anti_monster" in wep[6] and "monster" in target.kw:
+                rend += 1
+            if "anti_cavalry" in wep[6] and "cavalry" in target.kw:
+                rend += 1
+            if "anti_wizard" in wep[6] and "wizard" in target.kw:
+                rend += 1
+            if "anti_priest" in wep[6] and "priest" in target.kw:
+                rend += 1
+            if "anti_beast" in wep[6] and "beast" in target.kw:
+                rend += 1
+            if "anti_war_machine" in wep[6] and "war_machine" in target.kw:
+                rend += 1
+            if "anti_manifestation" in wep[6] and "manifestation" in target.kw:
+                rend += 1
 
         if "lance" in wep[6]:
-            print("Lance active (+1 to wound)")
+            if verbose:
+                print("Lance active (+1 to wound)")
             to_wound -= 1
             if to_wound < 2:
                 to_wound = 2
@@ -204,10 +243,10 @@ def do_it(unit, target, x=0, y=0, z=0, melee=None, strike=False, hazards = None,
             wound = random.randint(1,6)
             if verbose:
                 print(f"rolled {wound} to wound")
-            if wound<to_wound and "twin-linked" in wep[6]:
+            if wound<to_wound and ("twin-linked" in wep[6] or (("epic_w" in wep[6] or "epic_hw" in wep[6]) and "character" in target.kw)):
                 wound = random.randint(1,6)
                 if verbose:
-                    print(f"reroll for twin-linked: {wound}")
+                    print(f"rerolled into: {wound}")
             if wound >= to_wound:
                 if wound == 6 and "devastating_wounds" in wep[6]:
                     mortals = damage(wep[5], verbose = verbose)
@@ -215,8 +254,11 @@ def do_it(unit, target, x=0, y=0, z=0, melee=None, strike=False, hazards = None,
                         mortals += wep[6]["melta"]
                     if verbose:
                         print(f"devastating wound: {mortals} damage")
+
                     dmg = 0
-                    if target.fnpm < 7:
+                    if "psychic" in wep[6] and target.fnpp<target.fnpm:
+                        dmg = libi_buff(target, mortals, verbose = verbose)
+                    elif target.fnpm < 7:
                         for i in range (mortals):
                             fnpm1 = random.randint(1,6)
                             if verbose:
@@ -225,12 +267,17 @@ def do_it(unit, target, x=0, y=0, z=0, melee=None, strike=False, hazards = None,
                                 dmg += 1
                     else:
                         dmg = mortals
+
                     x,y,z = deal_damage(unit, target, dmg, x,y,z,verbose = verbose)
                 else:
                     wounds += 1
-
-        to_save = target.save+wep[4]
-        if melee is None and target.cover == 1 and "ignore cover" not in wep[6]:
+        if unit.fortyk:
+            to_save = target.save+wep[4]
+            if "GKtermobuff" in wep[6] and "monster" not in target.kw and "vehicle" not in target.kw:
+                to_save += 1
+        if unit.aos:
+            to_save = target.save+rend
+        if melee is False and target.cover == 1 and "ignore_cover" not in wep[6]:
             if wep[4] > 0:
                 to_save -= 1
                 if verbose:
@@ -240,27 +287,32 @@ def do_it(unit, target, x=0, y=0, z=0, melee=None, strike=False, hazards = None,
                     to_save -= 1
                     if verbose:
                         print("cover bonus")
-        to_save -= unit.stealth
         if to_save < 2:
             to_save = 2
 
         if verbose:
             print(f"total wounds: {wounds}\n====================================")
             print(f"to_save needed: {to_save}")
+            if target.invul < 7:
+                print(f"invunerable save: {target.invul}")
 
         for i in range(0, wounds):
             save = random.randint(1,6)
             if verbose:
                 print(f"save rolled: {save}")
-
+                if save<to_save and save >= target.invul:
+                    print("ivuln!")
             if save < to_save and save < target.invul:
                 dmag = damage(wep[5], verbose = verbose)
                 if "melta" in wep[6]:
                     dmag += wep[6]["melta"]
                 if verbose:
                     print(f"damage dealt: {dmag}")
-                dmg = 0
-                if target.fnp < 7:
+
+                if "psychic" in wep[6] and target.fnpp<target.fnp:
+                    dmg = libi_buff(target, dmag, verbose = verbose)
+                elif target.fnpm < 7:
+                    dmg = 0
                     for i in range (dmag):
                         fnp1 = random.randint(1,6)
                         if verbose:
@@ -269,27 +321,8 @@ def do_it(unit, target, x=0, y=0, z=0, melee=None, strike=False, hazards = None,
                             dmg += 1
                 else:
                     dmg = dmag
-                x,y,z = deal_damage(unit, target, dmg, x,y,z,verbose = verbose)
 
-        if unit.aos:
-            if "anti-infantry" in wep[6] and "infantry" in target.kw:
-                wep[4] -= 1
-            if "anti-hero" in wep[6] and "hero" in target.kw:
-                wep[4] -= 1
-            if "anti-monster" in wep[6] and "monster" in target.kw:
-                wep[4] -= 1
-            if "anti-cavalry" in wep[6] and "cavalry" in target.kw:
-                wep[4] -= 1
-            if "anti-wizard" in wep[6] and "wizard" in target.kw:
-                wep[4] -= 1
-            if "anti-priest" in wep[6] and "priest" in target.kw:
-                wep[4] -= 1
-            if "anti-beast" in wep[6] and "beast" in target.kw:
-                wep[4] -= 1
-            if "anti-war_machine" in wep[6] and "war_machine" in target.kw:
-                wep[4] -= 1
-            if "anti-manifestation" in wep[6] and "manifestation" in target.kw:
-                wep[4] -= 1
+                x,y,z = deal_damage(unit, target, dmg, x,y,z,verbose = verbose)
 
         if verbose and "hazardous" in wep[6]:
             print(f"hazard checks total: {checks}")
@@ -360,6 +393,10 @@ def shoot(unit, target, x=0, y=0, z=0, verbose = False):
         y=target.hp
 
     print("Shooting:")
+    hazards, dead =0,0
+    if unit.ranged_weapons5 == []:
+        print("No shooting here")
+        return x,y,z, hazards, dead
 
     unit.weapons = unit.ranged_weapons5
 
@@ -371,7 +408,7 @@ def shoot(unit, target, x=0, y=0, z=0, verbose = False):
         print(f"{unit.name} deals {x} damage to {target.name}\n killing {z} models")
     report_hazards(unit, hazards, dead, verbose = verbose)
 
-    if unit.models != 1:
+    if unit.models != 1 and unit.ranged_weapons10 != []:
 
         unit.weapons = unit.ranged_weapons10
         x,y,z,ignore,hazards,dead = do_it(unit,target,x,y,z,hazards = hazards, dead = dead, verbose = verbose)

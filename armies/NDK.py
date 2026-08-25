@@ -15,6 +15,7 @@ class NDK():
         self.stealth = 0
         if stealth:
             self.stealth = 1
+        self.minushit = False
         self.toughness = 8
         self.save = 2
         self.invul = 4
@@ -34,11 +35,11 @@ class NDK():
         for item in weapons:
             match (item):
                 case "psycannon":
-                    self.ranged_weapons5.append([1,6,3,10,2,3,{"ignore cover":True, "psychic": True}])
+                    self.ranged_weapons5.append([1,6,3,10,2,3,{"ignore_cover":True, "psychic": True}])
                 case "psilencer":
                     self.ranged_weapons5.append([1,12,3,6,0,1,{"sustained_hits":1, "psychic": True}])
                 case "incinerator":
-                    self.ranged_weapons5.append([1,"2d6","torrent",6,1,1,{"ignore cover":True}])
+                    self.ranged_weapons5.append([1,"2d6","torrent",6,1,1,{"ignore_cover":True}])
                 case "sublimator":
                     self.ranged_weapons5.append([1,2,3,9,4,"d6",{"melta":4,"twin-linked":True, "psychic": True}])
                 case "fragstorm":
