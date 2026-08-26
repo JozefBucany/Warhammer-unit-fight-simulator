@@ -1,4 +1,3 @@
-import copy
 import random
 
 
@@ -11,13 +10,22 @@ def report_hazards(unit, hazards, dead,verbose = False):
         print("")
 
 def damage(dmg, verbose = False):
+    result = 0
     if type(dmg) is int:
-        return dmg
-    if "+" in dmg:
-        a = dmg.split("+")
-        return (random.randint(1,int(a[0][1:]))+int(a[1]))
+        result = dmg
     else:
-        return (random.randint(1,int(dmg[1:])))
+        if len(dmg.split("+"))>1:
+            dmg1 = dmg.split("+")[0]
+            ex = int(dmg.split("+")[1])
+        else:
+            dmg1 = dmg
+            ex = 0
+        if len(dmg1.split("d")[0]) == 0:
+            result += random.randint(1, int(dmg1.split("d")[1]))+ex
+        else:
+            for i in range(0, int(dmg1.split("d")[0])):
+                result += random.randint(1, int(dmg1.split("d")[1]))+ex
+    return result
 
 def deal_damage(unit, target, dmg, x,y,z, verbose = False):
     if unit.fortyk:
@@ -48,7 +56,7 @@ def libi_buff(target, dmg,verbose = False):
                 print("i feel no pain!")
     return x
 
-def do_it(unit, target, x=0, y=0, z=0, melee=False, strike=False, hazards = None, dead = None,verbose = False):
+def do_it(unit, target, x=0, y=0, z=0, melee=False, strike=False, focused = False, hazards = None, dead = None,verbose = False):
     if y == 0:
         y = target.hp
     crit = False
@@ -64,6 +72,9 @@ def do_it(unit, target, x=0, y=0, z=0, melee=False, strike=False, hazards = None
 
         if strike is True and "strike" in wep[6]:
             strike = False
+            continue
+        if focused is True and "focused" in wep[6]:
+            focused = False
             continue
 
         shots = 0
@@ -104,8 +115,12 @@ def do_it(unit, target, x=0, y=0, z=0, melee=False, strike=False, hazards = None
             print(f"nonblast attacks: {shots}")
 
         if "blast" in wep[6]:
-            for i in range (4, target.models *2, 5):
-                shots += wep[6]["blast"]*wep[0]
+            if len(target.melee_weapons10) == 0:
+                for i in range (4, target.models, 5):
+                    shots += wep[6]["blast"]*wep[0]
+            else:
+                for i in range (4, target.models *2, 5):
+                    shots += wep[6]["blast"]*wep[0]
 
         if verbose:
             print(f"Total attacks: {shots}")
@@ -122,6 +137,8 @@ def do_it(unit, target, x=0, y=0, z=0, melee=False, strike=False, hazards = None
                 to_hit = wep[2]-1
             if (melee is False and target.stealth == 1) or target.minushit is True:
                 to_hit += 1
+            if unit.name == "Bloodthirster" and melee:
+                to_hit -= 1
             if to_hit <2:
                 to_hit = 2
 
@@ -134,14 +151,14 @@ def do_it(unit, target, x=0, y=0, z=0, melee=False, strike=False, hazards = None
                 if verbose:
                     print(f"rolled {hit} to hit")
 
-                if hit < to_hit and (("epic_h" in wep[6] or "epic_hw" in wep[6]) and "character" in target.kw):
+                if (hit == 1 and "reroll_h_1" in wep[6]) or (hit < to_hit and ("oath" in wep[6] or (("epic_h" in wep[6] or "epic_hw" in wep[6]) and "character" in target.kw))):
                     hit=random.randint(1,6)
                     if verbose:
                         print(f"rerolled into {hit}")
 
                 if hit == 1 and "hazardous" in wep[6]:
                     checks += 1
-                if hit == 6 or (hit > 3 and "conversion" in wep[6]):
+                if hit >= unit.crit_h_on or (hit > 3 and "conversion" in wep[6]):
                     crit = True
                     if verbose:
                         print("crit")
@@ -149,7 +166,10 @@ def do_it(unit, target, x=0, y=0, z=0, melee=False, strike=False, hazards = None
                 if hit >= to_hit or crit:
                     if crit and ("lethal_hits" in wep[6] or "crit(auto-wound)" in wep[6]):
                         if verbose:
-                            print("lethal")
+                            if unit.fortyk:
+                                print("lethal")
+                            if unit.aos:
+                                print("auto-wound")
                         wounds += 1
                     elif crit and "crit(mortal)" in wep[6]:
                         mortals = damage(wep[5], verbose = verbose)
@@ -173,7 +193,7 @@ def do_it(unit, target, x=0, y=0, z=0, melee=False, strike=False, hazards = None
 
                     if crit and "crit(2 hits)" in wep[6]:
                         if verbose:
-                            print("crit 2 hits")
+                            print("2 hits")
                         hits += 1
                     if crit and "sustained_hits" in wep[6]:
                         if verbose:
@@ -199,34 +219,34 @@ def do_it(unit, target, x=0, y=0, z=0, melee=False, strike=False, hazards = None
                 to_wound = 2
             if 2*wep[3] <= target.toughness:
                 to_wound = 6
-            if "anti_vehicle" in wep[6] and "vehicle" in target.kw:
-                to_wound = wep[6]["anti_vehicle"]
-            if "anti_infantry" in wep[6] and "infantry" in target.kw:
-                to_wound = wep[6]["anti_infantry"]
-            if "anti_character" in wep[6] and "character" in target.kw:
-                to_wound = wep[6]["anti_character"]
-            if "anti_psyker" in wep[6] and "psyker" in target.kw:
-                to_wound = wep[6]["anti_psyker"]
+            if "anti-vehicle" in wep[6] and "vehicle" in target.kw:
+                to_wound = wep[6]["anti-vehicle"]
+            if "anti-infantry" in wep[6] and "infantry" in target.kw:
+                to_wound = wep[6]["anti-infantry"]
+            if "anti-character" in wep[6] and "character" in target.kw:
+                to_wound = wep[6]["anti-character"]
+            if "anti-psyker" in wep[6] and "psyker" in target.kw:
+                to_wound = wep[6]["anti-psyker"]
         if unit.aos:
             to_wound = wep[3]
             rend = wep[4]
-            if "anti_infantry" in wep[6] and "infantry" in target.kw:
+            if "anti-infantry" in wep[6] and "infantry" in target.kw:
                 rend += 1
-            if "anti_hero" in wep[6] and "hero" in target.kw:
+            if "anti-hero" in wep[6] and "hero" in target.kw:
                 rend += 1
-            if "anti_monster" in wep[6] and "monster" in target.kw:
+            if "anti-monster" in wep[6] and "monster" in target.kw:
                 rend += 1
-            if "anti_cavalry" in wep[6] and "cavalry" in target.kw:
+            if "anti-cavalry" in wep[6] and "cavalry" in target.kw:
                 rend += 1
-            if "anti_wizard" in wep[6] and "wizard" in target.kw:
+            if "anti-wizard" in wep[6] and "wizard" in target.kw:
                 rend += 1
-            if "anti_priest" in wep[6] and "priest" in target.kw:
+            if "anti-priest" in wep[6] and "priest" in target.kw:
                 rend += 1
-            if "anti_beast" in wep[6] and "beast" in target.kw:
+            if "anti-beast" in wep[6] and "beast" in target.kw:
                 rend += 1
-            if "anti_war_machine" in wep[6] and "war_machine" in target.kw:
+            if "anti-war_machine" in wep[6] and "war_machine" in target.kw:
                 rend += 1
-            if "anti_manifestation" in wep[6] and "manifestation" in target.kw:
+            if "anti-manifestation" in wep[6] and "manifestation" in target.kw:
                 rend += 1
 
         if "lance" in wep[6]:
@@ -248,7 +268,14 @@ def do_it(unit, target, x=0, y=0, z=0, melee=False, strike=False, hazards = None
                 if verbose:
                     print(f"rerolled into: {wound}")
             if wound >= to_wound:
-                if wound == 6 and "devastating_wounds" in wep[6]:
+
+                if verbose:
+                    if wound >= unit.crit_w_on:
+                        print("crit")
+                    else:
+                        print("wound")
+
+                if wound >= unit.crit_w_on and "devastating_wounds" in wep[6]:
                     mortals = damage(wep[5], verbose = verbose)
                     if "melta" in wep[6]:
                         mortals += wep[6]["melta"]
@@ -355,15 +382,17 @@ def do_it(unit, target, x=0, y=0, z=0, melee=False, strike=False, hazards = None
 
         if "strike" in wep[6]:
             strike =True
+        if "focused" in wep[6]:
+            focused = True
 
         if verbose:
             print("")
 
-    if len(unit.ranged_weapons5) == 0:
+    if len(unit.weapons) == 0:
         temp = unit.hp
         dead = 0
 
-    return x,y,z,strike,unit.hp-temp,dead
+    return x,y,z,strike,focused,unit.hp-temp,dead
 
 def repeat_with_sweep(unit,target, x=0, y=0, z=0, xx= 0, yy = 0, zz = 0,allin = False, hazards = None, dead = None, verbose = False):
     if y == 0:
@@ -375,123 +404,154 @@ def repeat_with_sweep(unit,target, x=0, y=0, z=0, xx= 0, yy = 0, zz = 0,allin = 
         if "strike" in item[6]:
             item[0] = 0
         if "sweep" in item[6]:
-            item[0] = 1
-    xx,yy,zz,strike,hazards, dead = do_it(unit, target,xx,yy,zz,melee=True,strike=True, hazards = hazards, dead = dead, verbose = verbose)
-    if allin is False:
-        print(f"{unit.models} man {unit.name} deals {xx} damage to {target.name} using Sweep \n killing {zz} models.")
-        report_hazards(unit, hazards, dead, verbose = verbose)
+            item[0] = unit.models
+    xx,yy,zz,strike, focused,hazards, dead = do_it(unit, target,xx,yy,zz,melee=True,strike=True, hazards = hazards, dead = dead, verbose = verbose)
+    print(f"{unit.models} man {unit.name} deals {xx} damage to {target.name} using Sweep \n killing {zz} models.")
+    report_hazards(unit, hazards, dead, verbose = verbose)
 
     for item in unit.weapons:
         if "strike" in item[6]:
-            item[0] = 1
+            item[0] = unit.models
         if "sweep" in item[6]:
             item[0] = 0
     return False, xx,yy,zz,hazards, dead
 
-def shoot(unit, target, x=0, y=0, z=0, verbose = False):
+def repeat_unfocused(unit, target, xx=0, yy=0, zz=0, hazards1 = 0, dead1=0,verbose = False):
+    if yy == 0:
+        yy = target.hp
+
+    for item in unit.weapons:
+        if "focused" in item[6]:
+            item[0] = 0
+        if "not" in item[6]:
+            item[0] = unit.models
+
+    xx,yy,zz,strike,focused,hazards1, dead1 = do_it(unit, target,xx,yy,zz,melee=False,strike=False,focused = True, hazards = hazards1, dead = dead1, verbose = verbose)
+    print(f"{unit.models} man {unit.name} deals {xx} damage to {target.name} using unfocused shooting\n killing {zz} models")
+    report_hazards(unit, hazards1, dead1, verbose = verbose)
+
+    for item in unit.weapons:
+        if "focused" in item[6]:
+            item[0] = unit.models
+        if "not" in item[6]:
+            item[0] = 0
+
+    return xx, yy, zz,hazards1,dead1
+
+def shoot(unit, target, x=0, y=0, z=0, xx=0, yy=0, zz= 0,hazards = 0, dead = 0, verbose = False):
     if y == 0:
         y=target.hp
+    if yy == 0:
+        yy=target.hp
 
     print("Shooting:")
-    hazards, dead =0,0
+
     if unit.ranged_weapons5 == []:
-        print("No shooting here")
-        return x,y,z, hazards, dead
+        print("No shooting here\n")
+        return x,y,z,xx,yy,zz, hazards, dead
 
     unit.weapons = unit.ranged_weapons5
 
-    x,y,z,ignore,hazards, dead = do_it(unit,target,x,y,z, verbose = verbose)
+    x,y,z,strike,focused, hazards, dead = do_it(unit,target,x,y,z, verbose = verbose)
 
-    if unit.models != 1:
+    hazards1,dead1 = 0,0
+
+    if focused is False:
         print(f"{unit.models} man {unit.name} deals {x} damage to {target.name}\n killing {z} models")
+        report_hazards(unit, hazards, dead, verbose = verbose)
     else:
-        print(f"{unit.name} deals {x} damage to {target.name}\n killing {z} models")
-    report_hazards(unit, hazards, dead, verbose = verbose)
+        print(f"{unit.models} man {unit.name} deals {x} damage to {target.name} using focused shooting\n killing {z} models")
+        report_hazards(unit, hazards, dead, verbose = verbose)
+        xx, yy, zz,hazards1,dead1 = repeat_unfocused(unit, target, verbose = verbose)
 
     if unit.models != 1 and unit.ranged_weapons10 != []:
 
         unit.weapons = unit.ranged_weapons10
-        x,y,z,ignore,hazards,dead = do_it(unit,target,x,y,z,hazards = hazards, dead = dead, verbose = verbose)
+        x,y,z,strike,focused,hazards,dead = do_it(unit,target,x,y,z,hazards = hazards, dead = dead, verbose = verbose)
 
-        print(f"{unit.models*2} man {unit.name} deals {x} damage to {target.name}\n killing {z} models")
-        report_hazards(unit, hazards, dead, verbose = verbose)
+        if focused is False:
+            print(f"{unit.models*2} man {unit.name} deals {x} damage to {target.name}\n killing {z} models")
+            report_hazards(unit, hazards, dead, verbose = verbose)
+        else:
+            print(f"{unit.models*2} man {unit.name} deals {x} damage to {target.name} using focused shooting\n killing {z} models")
+            report_hazards(unit, hazards, dead, verbose = verbose)
+            xx, yy, zz,hazards1,dead1 = repeat_unfocused(unit, target, hazards1 = hazards1, dead1 = dead1, verbose = verbose)
 
-    return x,y,z, hazards, dead
+    if hazards1 > hazards:
+        hazards = hazards1
+    if dead1 > dead:
+        dead = dead1
+
+    return x,y,z, xx,yy,zz, hazards, dead
 
 def melee(unit, target, x=0, y=0, z=0, xx=0, yy = 0, zz = 0, allin = False,hazards = None, dead = None, verbose = False):
     if allin is False:
         x=0
         y=target.hp
         z=0
+        xx = 0
+        yy = target.hp
+        zz = 0
     if y == 0:
         y = target.hp
     if yy == 0:
         yy = target.hp
-    striked = False
 
     print("Melee combat:")
 
     unit.weapons = unit.melee_weapons5
 
-    x,y,z,strike,hazards,dead = do_it(unit,target,x,y,z, melee=True,hazards = hazards, dead = dead, verbose = verbose)
+    x,y,z,strike,focused,hazards,dead = do_it(unit,target,x,y,z, melee=True,hazards = hazards, dead = dead, verbose = verbose)
 
     if strike is False:
-        if unit.models != 1:
-            if allin is False:
-                print(f"{unit.models} man {unit.name} deals {x} damage to {target.name}\n killing {z} models.")
-                report_hazards(unit, hazards, dead, verbose = verbose)
-        else:
-            if allin is False:
-                print(f"{unit.name} deals {x} damage to {target.name}\n killing {z} models.")
-                report_hazards(unit, hazards, dead, verbose = verbose)
+        print(f"{unit.models} man {unit.name} deals {x} damage to {target.name}\n killing {z} models.")
+        report_hazards(unit, hazards, dead, verbose = verbose)
     else:
-        if unit.models != 1:
-            if allin is False:
-                print(f"{unit.models} man {unit.name} deals {x} damage to {target.name} using Strike \n killing {z} models.")
-                report_hazards(unit, hazards, dead, verbose = verbose)
-            strike, xx, yy, zz,hazards,dead = repeat_with_sweep(unit, target, x,y,z,xx, yy, zz, allin = allin,hazards = hazards, dead = dead, verbose = verbose)
-        else:
-            if allin is False:
-                print(f"{unit.name} deals {x} damage to {target.name} using Strike \n killing {z} models.")
-                report_hazards(unit, hazards, dead, verbose = verbose)
-            strike, xx, yy, zz,hazards, dead = repeat_with_sweep(unit, target, x,y,z,xx, yy, zz, allin = allin, hazards = hazards, dead = dead, verbose = verbose)
-            striked = True
+        print(f"{unit.models} man {unit.name} deals {x} damage to {target.name} using Strike \n killing {z} models.")
+        report_hazards(unit, hazards, dead, verbose = verbose)
+        strike, xx, yy, zz,hazards,dead = repeat_with_sweep(unit, target, x,y,z,xx, yy, zz, allin = allin,hazards = hazards, dead = dead, verbose = verbose)
 
-    if unit.models != 1:
+    if (unit.models != 1 or unit.name == "Beast of Nurgle") and unit.melee_weapons10 != []:
 
         unit.weapons = unit.melee_weapons10
-        x,y,z,strike,hazards, dead = do_it(unit,target,x,y,z,melee=True, hazards = hazards, dead = dead,verbose = verbose)
+        x,y,z,strike,focused,hazards, dead = do_it(unit,target,x,y,z,melee=True, hazards = hazards, dead = dead,verbose = verbose)
 
         if strike is False:
-            if allin is False:
-                print(f"{unit.models*2} man {unit.name} deals {x} damage to {target.name}\n killing {z} models")
-                report_hazards(unit, hazards, dead, verbose = verbose)
+            print(f"{unit.models*2} man {unit.name} deals {x} damage to {target.name}\n killing {z} models")
+            report_hazards(unit, hazards, dead, verbose = verbose)
         else:
-            if allin is False:
-                print(f"{unit.models*2} man {unit.name} deals {x} damage to {target.name} using Strike\n killing {z} models")
-                report_hazards(unit, hazards, dead, verbose = verbose)
+            print(f"{unit.models*2} man {unit.name} deals {x} damage to {target.name} using Strike\n killing {z} models")
+            report_hazards(unit, hazards, dead, verbose = verbose)
             strike, xx, yy, zz,hazards, dead = repeat_with_sweep(unit, target, allin=allin, hazards = hazards, dead = dead,verbose = verbose)
-        print("")
-
-    return x,y,z,xx,yy,zz,striked,hazards, dead
+    print("")
 
 def all_in(unit, target, verbose=False):
     print(f"{unit.name} goes all-in on {target.name}:")
     x = 0
     y = 0
     z = 0
-    x, y, z,hazards, dead = shoot(unit, target, verbose = verbose)
-    xx = copy.copy(x)
-    yy = copy.copy(y)
-    zz = copy.copy(z)
+    x, y, z,xx,yy,zz,hazards, dead = shoot(unit, target, verbose = verbose)
 
-    x, y, z, xx, yy, zz, striked,hazards, dead = melee(unit, target, x, y, z, xx, yy, zz, allin = True,hazards = hazards, dead = dead, verbose = verbose)
+    if zz>z:
+        x += xx-x
+        y += yy-y
+        z += zz-z
+    elif z>zz:
+        xx += x-xx
+        yy += y-yy
+        zz += z-zz
+    elif xx>x:
+        x += xx-x
+        y += yy-y
+        z += zz-z
+    elif x>xx:
+        xx += x-xx
+        yy += y-yy
+        zz += z-zz
 
-    if striked:
-        print(f"{unit.name} does {x} damage in total using Strike\n killing {z} models")
-        report_hazards(unit, hazards, dead, verbose = verbose)
-        print(f"{unit.name} does {xx} damage in total using Sweep\n killing {zz} models")
-        report_hazards(unit, hazards, dead, verbose = verbose)
-    else:
-        print(f"{unit.name} does {x} damage to {target.name}\n killing {z} models")
-        report_hazards(unit, hazards, dead, verbose = verbose)
+
+    if target.name == "Beast of Nurgle":
+        y = target.hp
+        yy = target.hp
+
+    melee(unit, target, x, y, z, xx, yy, zz, allin = True,hazards = hazards, dead = dead, verbose = verbose)

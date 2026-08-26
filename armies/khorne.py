@@ -1,47 +1,14 @@
-from .daemons import Base40k
+from armies.daemons import Base40k
 
 
 class Khorne40k(Base40k):
     def __init__(self, cover: bool = False, stealth = False, blmas=False, skmas = False, sktak=False):
-        super().__init__(cover, stealth)
+        super().__init__(cover, stealth, blmas = blmas, skmas = skmas, sktak = sktak)
         self.kw.append("khorne")
-        self.skmas = False
-        self.blmas = False
-        self.sktak = False
-        if skmas:
-            self.skmas = True
-        if blmas:
-            self.blmas = True
-        if sktak:
-            self.sktak = True
-
-    def __repr__(self):
-        x = "================================\n"
-        x += f"{self.name}:\n"
-        x+= "================================\n"
-        x += f"Toughness: {self.toughness}\n"
-        if self.invul < 7:
-            x+= f"Invulnerable save: {self.invul}\n"
-        if self.fnp <7:
-            x+= f"Feel no pain: {self.fnp}"
-        if self.cover == 0:
-            x += "in cover? = No\n"
-        else:
-            x += "in cover? = Yes\n"
-        if self.blmas:
-            x += "led by Blood Master\n"
-        if self.skmas:
-            x += "led by Skull Master\n"
-        if self.sktak:
-            x += "led by Skull Taker\n"
-        return x
-
-
-
 
 class Bloodletters40k (Khorne40k):
-    def __init__(self, cover: bool = False, stealth = False, blmas=False, skmas = False, sktak=False):
-        super().__init__(cover, stealth, blmas, skmas, sktak)
+    def __init__(self, cover: bool = False, stealth = False, blmas=False, sktak=False):
+        super().__init__(cover, stealth, blmas=blmas, sktak=sktak)
         self.name = "Khorne Bloodletters"
         self.kw.append("infantry")
         self.hp = 1
@@ -65,8 +32,8 @@ class Bloodletters40k (Khorne40k):
         self.ranged_weapons10 = []
 
 class Flesh_Hounds40k (Khorne40k):
-    def __init__(self, cover: bool = False, stealth = False, blmas=False, skmas = False, sktak=False):
-        super().__init__(cover, stealth, blmas, skmas, sktak)
+    def __init__(self, cover: bool = False, stealth = False):
+        super().__init__(cover, stealth)
         self.name = "Flesh Hounds"
         self.kw.append("beast")
         self.models = 5
@@ -81,8 +48,8 @@ class Flesh_Hounds40k (Khorne40k):
         self.ranged_weapons10 = [[5,"d6","torrent",4,0,1,{"ignore_cover":True}]]
 
 class Blood_Crushers40k (Khorne40k):
-    def __init__(self, cover: bool = False, stealth = False, blmas=False, skmas = False, sktak=False):
-        super().__init__(cover, stealth, blmas, skmas, sktak)
+    def __init__(self, cover: bool = False, stealth = False, skmas = False):
+        super().__init__(cover, stealth, skmas=skmas)
         self.name = "Blood Crushers"
         self.kw.append("mounted")
         self.models = 3
@@ -108,8 +75,8 @@ class Blood_Crushers40k (Khorne40k):
         self.ranged_weapons10 = []
 
 class Skull_Cannon40k(Khorne40k):
-    def __init__(self, cover: bool = False, stealth = False, blmas=False, skmas = False, sktak=False):
-        super().__init__(cover, stealth, blmas, skmas, sktak)
+    def __init__(self, cover: bool = False, stealth = False):
+        super().__init__(cover, stealth)
         self.name = "Skull Cannon"
         self.kw.append("mounted")
         self.models = 1
@@ -123,8 +90,8 @@ class Skull_Cannon40k(Khorne40k):
         self.ranged_weapons10 = []
 
 class Bloodmaster40k(Khorne40k):
-    def __init__(self, cover: bool = False, stealth = False, blmas=False, skmas = False, sktak=False):
-        super().__init__(cover, stealth, blmas, skmas, sktak)
+    def __init__(self, cover: bool = False, stealth = False, blmas=False):
+        super().__init__(cover, stealth, blmas=blmas)
         self.name = "BloodMaster"
         self.kw.append("infantry")
         self.kw.append("character")
@@ -141,8 +108,8 @@ class Bloodmaster40k(Khorne40k):
         self.ranged_weapons10 = []
 
 class Bloodthirster40k(Khorne40k):
-    def __init__(self, weapons: str = None, cover: bool = False, stealth = False, blmas=False, skmas = False, sktak=False):
-        super().__init__(cover, stealth, blmas, skmas, sktak)
+    def __init__(self, weapons = None, cover: bool = False, stealth = False):
+        super().__init__(cover, stealth)
         match (weapons):
             case "axe+breath":
                 self.melee_weapons5 = [[1,7,2,16,4,"d6+2",{"strike":True}], [0,14,2,10,2,2,{"sweep":True}]]
@@ -165,8 +132,8 @@ class Bloodthirster40k(Khorne40k):
         self.ranged_weapons10 = []
 
 class Karanak40k(Khorne40k):
-    def __init__(self, cover: bool = False, stealth = False, blmas=False, skmas = False, sktak=False):
-        super().__init__(cover, stealth, blmas, skmas, sktak)
+    def __init__(self, cover: bool = False, stealth = False):
+        super().__init__(cover, stealth)
         self.name = "Karanak"
         self.kw.append("beast")
         self.kw.append("character")
@@ -175,14 +142,14 @@ class Karanak40k(Khorne40k):
         self.toughness = 4
         self.save = 7
         self.invul = 4
-        self.melee_weapons5 = [[1,6,2,6,2,2,{"anti_character":3}]]
+        self.melee_weapons5 = [[1,6,2,6,2,2,{"anti-character":3}]]
         self.melee_weapons10 = []
         self.ranged_weapons5 = [[1,"d6+3","torrent",5,1,1,{"ignore_cover":True}]]
         self.ranged_weapons10 = []
 
 class Skarbrand40k(Khorne40k):
-    def __init__(self, cover: bool = False, stealth = False, blmas=False, skmas = False, sktak=False):
-        super().__init__(cover, stealth, blmas, skmas, sktak)
+    def __init__(self, cover: bool = False, stealth = False):
+        super().__init__(cover, stealth)
         self.name = "Skarbrand"
         self.kw.append("monster")
         self.kw.append("character")
@@ -191,14 +158,14 @@ class Skarbrand40k(Khorne40k):
         self.toughness = 11
         self.save = 3
         self.invul = 4
-        self.melee_weapons5 = [[1,8,2,16,4,6,{"strike":True}],[0,16,2,8,2,2,{"sweep":True}]]
+        self.melee_weapons5 = [[1,9,2,16,4,6,{"strike":True}],[0,17,2,8,2,2,{"sweep":True}]]
         self.melee_weapons10 = []
         self.ranged_weapons5 = [[1,"2d6","torrent",8,1,1,{"ignore_cover":True}]]
         self.ranged_weapons10 = []
 
 class Skullmaster40k(Khorne40k):
-    def __init__(self, cover: bool = False, stealth = False, blmas=False, skmas = False, sktak=False):
-        super().__init__(cover, stealth, blmas, skmas, sktak)
+    def __init__(self, cover: bool = False, stealth = False, skmas = False):
+        super().__init__(cover, stealth, skmas=skmas)
         self.name = "SkullMaster"
         self.kw.append("mounted")
         self.kw.append("character")
@@ -217,8 +184,8 @@ class Skullmaster40k(Khorne40k):
         self.ranged_weapons10 = []
 
 class Skulltaker40k(Khorne40k):
-    def __init__(self, cover: bool = False, stealth = False, blmas=False, skmas = False, sktak=False):
-        super().__init__(cover, stealth, blmas, skmas, sktak)
+    def __init__(self, cover: bool = False, stealth = False, sktak=False):
+        super().__init__(cover, stealth, sktak=sktak)
         self.name = "SkullTaker"
         self.kw.append("infantry")
         self.kw.append("character")

@@ -4,7 +4,9 @@ class NDK():
         self.models = 1
         self.fortyk = True
         self.aos = False
-        self.kw = ["psyker", "vehicle"]
+        self.kw = ["psyker", "vehicle","walker"]
+        self.crit_h_on = 6
+        self.crit_w_on = 6
         self.hp = 13
         self.fnp = 7
         self.fnpm = 7
@@ -20,14 +22,16 @@ class NDK():
         self.save = 2
         self.invul = 4
         self.melee_weapons5 = [[1,6,2,6,1,1,{}]]
+        self.melee_weapons10 = []
         self.ranged_weapons5 = []
+        self.ranged_weapons10 = []
         match (meleewep):
             case "hammer":
                 self.melee_weapons5=[[1,5,3,14,3,"d6+1",{"psychic": True}]]
             case "flail":
                 self.melee_weapons5=[[1,10,2,5,1,2,{"psychic": True}]]
             case "mace":
-                self.melee_weapons5=[[1,5,2,6,3,3,{"anti_character": 2, "psychic": True}]]
+                self.melee_weapons5=[[1,5,2,6,3,3,{"anti-character": 2, "psychic": True}]]
             case "sword":
                 self.melee_weapons5=[[1,5,2,10,2,"d6",{"strike":True, "psychic": True}], [0,10,2,5,1,1,{"sweep":True, "psychic": True}]]
             case _:
@@ -48,9 +52,11 @@ class NDK():
                     pass
 
     def __repr__(self):
-        x = f"{self.name}"
-        x+=":\n"
+        x = "================================================================\n"
+        x += f"{self.name}:\n"
+        x+= "================================================================\n"
         x += f"Toughness: {self.toughness}\n"
+        x += f"armor save: {self.save}\n"
         x += f"Invulnerable save: {self.invul}\n"
         if self.cover == 0:
             x += "in cover? = No"
