@@ -119,16 +119,20 @@ class DP40k(Base40k):
         match(alegiance):
             case "tzeentch":
                 self.name += " of Tzeentch"
+                self.kw.append ("tzeentch")
                 self.ranged_weapons5[0][1] = 6
             case "khorne":
                 self.name += " of Khorne"
+                self.kw.append ("khorne")
                 for item in self.melee_weapons5:
                     item[3] += 2
             case "nurgle":
                 self.name += " of Nurgle"
+                self.kw.append ("nurgle")
                 self.toughness += 1
             case "slaanesh":
                 self.name += " of Slaanesh"
+                self.kw.append ("slaanesh")
             case _:
                 pass
 
@@ -151,16 +155,20 @@ class DPW40k(Base40k):
         match(alegiance):
             case "tzeentch":
                 self.name += " of Tzeentch"
+                self.kw.append ("tzeentch")
                 self.ranged_weapons5[0][1] = 6
             case "khorne":
                 self.name += " of Khorne"
+                self.kw.append ("khorne")
                 for item in self.melee_weapons5:
                     item[3] += 2
             case "nurgle":
                 self.name += " of Nurgle"
+                self.kw.append ("nurgle")
                 self.toughness += 1
             case "slaanesh":
                 self.name += " of Slaanesh"
+                self.kw.append ("slaanesh")
             case _:
                 pass
         match (mode):
@@ -193,15 +201,19 @@ class SoulGrinder40k(Base40k):
         match(alegiance):
             case "tzeentch":
                 self.name += " of Tzeentch"
+                self.kw.append ("tzeentch")
                 self.ranged_weapons5.append([1,"d3",3,12,2,"d6+2",{"blast":True}])
             case "khorne":
                 self.name += " of Khorne"
+                self.kw.append ("khorne")
                 self.ranged_weapons5.append([1,"2d6","torrent",5,1,1,{"ignore_cover":True}])
             case "nurgle":
                 self.name += " of Nurgle"
+                self.kw.append ("nurgle")
                 self.ranged_weapons5.append([1,"d6+1",3,7,1,2,{"blast":True, "lethal_hits":True}])
             case "slaanesh":
                 self.name += " of Slaanesh"
+                self.kw.append ("slaanesh")
                 self.ranged_weapons5.append([1,6,3,9,2,2,{"sustained_hits":1,"devastating_wounds":True}])
             case _:
                 pass
