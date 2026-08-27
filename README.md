@@ -6,6 +6,7 @@ This program takes 2 of my favorite armies to take the heck out of each other in
 
 
 **Basics**
+
 Basic units are created from data by Games Workshop, all IP rights belong to them, this is just a fan project and i`m not selling this to anyone.
 
 What you might want to know is that there is no interface yet and all inputs are done via editing main.py main function. FOR NOW. (i just need to stop with this project for a bit and focus on different things)
@@ -63,6 +64,7 @@ i also decided that abilities that work differently when "on objective" and such
 !!! during attack, because of how strike/sweep and focused/not interaction is coded.
 
 =========================================================
+
 **AOS weapon abilities:**
 
 I implemented few checks for AoS support, although not fully implemented yet.
