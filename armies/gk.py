@@ -1,9 +1,15 @@
-class Weapon():
-    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False):
+class Base():
+    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, champ = False, tech = False, crowe= False, voldus = False, captain=False, libi = False):
         if weapons_list5 is None:
             weapons_list5 = []
         if weapons_list10 is None:
             weapons_list10 = []
+        self.champ = champ
+        self.tech = tech
+        self.crowe = crowe
+        self.voldus = voldus
+        self.captain = captain
+        self.libi = libi
         self.crit_h_on = 6
         self.crit_w_on = 6
         self.cover = 0
@@ -121,26 +127,30 @@ class Weapon():
             x += "in cover? = No\n"
         else:
             x += "in cover? = Yes\n"
-        if self.name == "Purifier Squad" and self.ranged_weapons5[2][1] == 2:
+        if self.crowe:
             x += "led by Castelan Crowe\n"
-        if self.minushit is True:
+        if self.tech:
+            x += "led by Techmarine\n"
+        if self.champ:
+            x += "led by Brotherhood champion\n"
+        if self.voldus:
             x += "led by Grandmaster Voldus\n"
-        if "lethal_hits" in self.melee_weapons5[0][6]:
+        if self.captain:
             x += "led by Brother Captain\n"
-        if self.fnpp == 4:
+        if self.libi:
             x += "led by Brotherhood Librarian\n"
         return x
 
 
 
-class Infantry (Weapon):
-    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False):
-        super().__init__(weapons_list5, weapons_list10, cover, stealth)
+class Infantry (Base):
+    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, champ = False, tech = False, crowe= False, voldus = False, captain=False, libi = False):
+        super().__init__(weapons_list5, weapons_list10, cover, stealth,champ = champ, tech = tech, crowe=crowe,voldus = voldus, captain = captain, libi = libi)
         self.kw = ["infantry","psyker"]
 
 class PowerArmor(Infantry):
-    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False):
-        super().__init__(weapons_list5, weapons_list10, cover, stealth)
+    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, champ = False, tech = False, crowe= False, voldus = False, captain=False, libi = False):
+        super().__init__(weapons_list5, weapons_list10, cover, stealth,champ = champ, tech = tech, crowe = crowe,voldus = voldus, captain = captain, libi = libi)
         self.hp = 2
         self.toughness = 4
         self.save = 2
@@ -148,23 +158,9 @@ class PowerArmor(Infantry):
 
 class TermoArmor (Infantry):
     def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, voldus = False, captain=False, libi = False):
-        super().__init__(weapons_list5, weapons_list10, cover, stealth)
+        super().__init__(weapons_list5, weapons_list10, cover, stealth,voldus = voldus, captain = captain, libi = libi)
         self.melee_weapons5[0][0] = 0
-        self.melee_weapons5[1][0] = self.models
-        if captain:
-            self.ranged_weapons5[0][0] += 1
-            self.melee_weapons5.append([1,4,2,6,2,2,{"psychic":True}])
-            for item in self.melee_weapons5:
-                if "lethal_hits" not in item[6]:
-                    item[6]["lethal_hits"]= True
-        if voldus:
-            self.minushit = True
-            self.ranged_weapons5[0][0] += 1
-            self.melee_weapons5.append([1,5,2,10,2,3,{"psychic":True}])
-        if libi and self.fnpp > 4:
-            self.fnpp = 4
-            self.ranged_weapons5[0][0] += 1
-            self.melee_weapons5.append([1,4,2,10,2,3,{"psychic":True}])
+        self.melee_weapons5[1][0] = 5
         self.kw.append("terminator")
         self.hp = 3
         self.toughness = 5
@@ -172,12 +168,20 @@ class TermoArmor (Infantry):
         self.invul = 4
 
 class StrikeSquad(PowerArmor):
-    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False):
-        super().__init__(weapons_list5, weapons_list10, cover,stealth)
+    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, champ = False, tech = False):
+        super().__init__(weapons_list5, weapons_list10, cover,stealth,champ = champ)
         self.name = "Strike Squad"
+        if champ:
+            self.melee_weapons5.append([1,5,2,6,2,2,{"psychic":True}])
+            self.ranged_weapons5.append([1,2,2,4,0,1,{"rapid_fire":2}])
+        if tech:
+            self.melee_weapons5.append([1,4,3,6,2,2,{}])
+            self.melee_weapons5.append([1,1,3,8,2,3,{}])
+            self.melee_weapons5.append([1,3,2,5,1,2,{}])
+            self.ranged_weapons5.append([1,1,2,4,1,2,{"anti-vehicle":2}])
 
 class Purifiers(PowerArmor):
-    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, crowe = False):
+    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, crowe= False):
         super().__init__(weapons_list5, weapons_list10, cover,stealth)
         self.name = "Purifier Squad"
         self.ranged_weapons5.append([5,1,3,4,2,1,{"anti-infantry": 2, "ignore_cover":True}])
@@ -203,13 +207,16 @@ class Interceptors(PowerArmor):
         self.name = "Interceptor Squad"
 
 class Purgators(PowerArmor):
-    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False):
-        super().__init__(weapons_list5, weapons_list10, cover, stealth)
+    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, champ = False):
+        super().__init__(weapons_list5, weapons_list10, cover, stealth,champ = champ)
         self.name = "Purgation Squad"
+        if champ:
+            self.melee_weapons5.append([1,5,2,6,2,2,{"psychic":True}])
+            self.ranged_weapons5.append([1,2,2,4,0,1,{"rapid_fire":2}])
 
 class Terminator(TermoArmor):
     def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, apothecary = False, voldus = False, captain = False, libi = False):
-        super().__init__(weapons_list5, weapons_list10, cover, stealth)
+        super().__init__(weapons_list5, weapons_list10, cover, stealth, voldus=voldus, captain=captain, libi=libi)
         self.name = "Terminator Squad"
         self.melee_weapons5[0][0] = 0
         self.melee_weapons5[1][0] = 5
@@ -217,6 +224,20 @@ class Terminator(TermoArmor):
         self.melee_weapons10[1][0] = 5
         if apothecary:
             self.ranged_weapons5[0][0] -= 1
+        if captain:
+            self.ranged_weapons5[0][0] += 1
+            self.melee_weapons5.append([1,4,2,6,2,2,{"psychic":True}])
+            for item in self.melee_weapons5:
+                item[6]["lethal_hits"]= True
+        if voldus:
+            self.minushit = True
+            self.ranged_weapons5[0][0] += 1
+            self.melee_weapons5.append([1,5,2,10,2,3,{"psychic":True}])
+        if libi:
+            if self.fnpp > 4:
+                self.fnpp = 4
+            self.ranged_weapons5[0][0] += 1
+            self.melee_weapons5.append([1,4,2,6,1,2,{"psychic":True}])
         for item in self.melee_weapons5:
             item[6]["GKtermobuff"] = True
         for item in self.melee_weapons10:
@@ -224,11 +245,9 @@ class Terminator(TermoArmor):
 
 class Paladin(TermoArmor):
     def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, ancient_weapon: list[str] = ["stormbolter"], cover: bool = False, stealth = False, apothecary = False, voldus = False, captain = False, libi = False):
-        super().__init__(weapons_list5, weapons_list10, cover, stealth)
+        super().__init__(weapons_list5, weapons_list10, cover, stealth, voldus=voldus, captain=captain, libi=libi)
         self.name = "Paladin Squad"
         self.melee_weapons5[1][1] = 4
-        self.melee_weapons5[1][6]["charge(+1 dmg)"] = True
-        self.melee_weapons10[1][6]["charge(+1 dmg)"] = True
         self.melee_weapons5[1][2] = 2
         self.melee_weapons10[1][1] = 4
         self.melee_weapons10[1][2] = 2
@@ -268,6 +287,24 @@ class Paladin(TermoArmor):
                                 asdf[0] += 1
                 case _:
                     pass
+        if captain:
+            self.ranged_weapons5[0][0] += 1
+            self.melee_weapons5.append([1,4,2,6,2,2,{"psychic":True}])
+            for item in self.melee_weapons5:
+                item[6]["lethal_hits"]= True
+        if voldus:
+            self.minushit = True
+            self.ranged_weapons5[0][0] += 1
+            self.melee_weapons5.append([1,5,2,10,2,3,{"psychic":True}])
+        if libi:
+            if self.fnpp > 4:
+                self.fnpp = 4
+            self.ranged_weapons5[0][0] += 1
+            self.melee_weapons5.append([1,4,2,6,1,2,{"psychic":True}])
+        for item in self.melee_weapons5:
+            item[6]["charge(+1 dmg)"] = True
+        for item in self.melee_weapons10:
+            item[6]["charge(+1 dmg)"] = True
 
 
 class Brotherhood_Champion(PowerArmor):
@@ -284,7 +321,7 @@ class Brotherhood_Champion(PowerArmor):
 
 class Castellan_Crowe(PowerArmor):
     def __init__(self, weapons_list5: list[str] = ["stormbolter"], weapons_list10: list[str] = ["stormbolter"], cover: bool = False, stealth = False, crowe = False):
-        super().__init__(weapons_list5, weapons_list10, cover, stealth)
+        super().__init__(weapons_list5, weapons_list10, cover, stealth,crowe = crowe)
         self.name = "Castelan Crowe"
         self.kw.append("character")
         self.models = 1
@@ -314,7 +351,7 @@ class Techmarine(PowerArmor):
 
 class TermoChar(TermoArmor):
     def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, voldus = False, captain = False, libi = False):
-        super().__init__(weapons_list5, weapons_list10, cover, stealth, voldus, captain,libi)
+        super().__init__(weapons_list5, weapons_list10, cover, stealth, voldus=voldus, captain=captain,libi=libi)
         self.name = "Terminator Character"
         self.kw.append("character")
         self.models = 1
@@ -335,6 +372,9 @@ class Brother_Captain(TermoChar):
     def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, captain = False):
         super().__init__(weapons_list5, weapons_list10, cover, stealth, captain=captain)
         self.name = "Brother Captain"
+        if captain:
+            for item in self.melee_weapons5:
+                item[6]["lethal_hits"]= True
 
 class Librarian(TermoChar):
     def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, libi = False):
@@ -344,6 +384,9 @@ class Librarian(TermoChar):
         if "combi-weapon" in weapons_list5:
             self.ranged_weapons5 = [[1,1,4,4,0,1,{"rapid_fire":1,"anti-infantry":4, "devastating_wounds":True}]]
         self.ranged_weapons5.append([1,"d6+3",3,8,2,2,{"blast": True, "psychic":True}])
+        if libi:
+            if self.fnpp > 4:
+                self.fnpp = 4
 
 class Grandmaster(TermoChar):
     def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False):
@@ -362,6 +405,8 @@ class GM_Voldus(TermoChar):
         self.melee_weapons5[1][3] = 10
         self.melee_weapons5[1][5] = 3
         self.ranged_weapons5[0][2] = 2
+        if voldus:
+            self.minushit = True
 
 class Chaplain(TermoChar):
     def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False):
@@ -370,42 +415,53 @@ class Chaplain(TermoChar):
         self.melee_weapons5[1][1] = 5
         self.melee_weapons5[1][4] = 1
 
-class TestUnit(TermoChar):
-    def __init__(self, weapons_list5: list[str]|None = None, weapons_list10: list[str]|None = None, cover: bool = False, stealth = False, voldus = False, captain = False, libi = False):
-        super().__init__(weapons_list5, weapons_list10, cover, stealth, voldus, captain, libi)
-        self.name = "Test Unit with a LOT of weapons"
+class NDK(Base):
+    def __init__(self, meleewep:str|None=None, weapons:list[str|None]=[], cover: bool = False, stealth = False,tech=False):
+        super().__init__(cover = cover,stealth =stealth,tech = tech)
+        self.name = "Nemesis Dreadknight"
+        self.models = 1
+        self.kw = ["psyker", "vehicle","walker"]
+        self.hp = 13
+        self.toughness = 8
+        self.save = 2
+        self.invul = 4
+        self.melee_weapons5 = [[1,6,2,6,1,1,{}]]
+        self.melee_weapons10 = []
         self.ranged_weapons5 = []
-        self.melee_weapons5 = []
-        self.ranged_weapons5.append([1,5,2,8,3,3,{"psychic":True, "rapid_fire":1}])
-        self.ranged_weapons5.append([1,5,2,8,3,3,{"rapid_fire":"d3"}])
-        self.ranged_weapons5.append([1,5,2,3,3,3,{"anti-infantry":2}])
-        self.ranged_weapons5.append([1,5,2,3,3,3,{"anti-vehicle":2}])
-        self.ranged_weapons5.append([1,5,2,3,3,3,{"anti-psyker":2}])
-        self.ranged_weapons5.append([1,5,2,3,3,3,{"anti-monster":2}])
-        self.ranged_weapons5.append([1,5,2,8,3,3,{"blast":True}])
-        self.ranged_weapons5.append([1,5,2,8,3,3,{"conversion":True}])
-        self.ranged_weapons5.append([1,5,4,8,3,3,{"heavy":True}])
-        self.ranged_weapons5.append([1,5,4,8,3,3,{"conversion":True,"heavy":True}])
-        self.ranged_weapons5.append([1,5,2,8,3,3,{"devastating_wounds":True}])
-        self.ranged_weapons5.append([1,5,2,8,3,3,{"hazardous":True}])
-        self.ranged_weapons5.append([1,5,2,8,2,3,{"ignore_cover":True}])
-        self.ranged_weapons5.append([1,5,2,8,3,3,{"lethal_hits":True}])
-        self.ranged_weapons5.append([1,5,2,8,3,3,{"melta":3}])
-        self.ranged_weapons5.append([1,5,2,8,3,3,{"sustained_hits":"d3"}])
-        self.ranged_weapons5.append([1,5,2,4,3,3,{"twin-linked":True}])
-        self.ranged_weapons5.append([1,5,"torrent",8,3,3,{}])
-        self.ranged_weapons5.append([1,"2d6",2,8,3,3,{}])
-        self.ranged_weapons5.append([1,"2d6+2",2,8,3,3,{}])
-        self.ranged_weapons5.append([1,"2d6+2","torrent",8,3,3,{}])
-        self.melee_weapons5.append([1,5,2,3,3,3,{"anti-infantry":2}])
-        self.melee_weapons5.append([1,5,2,3,3,3,{"anti-vehicle":2}])
-        self.melee_weapons5.append([1,5,2,3,3,3,{"anti-psyker":2}])
-        self.melee_weapons5.append([1,5,2,3,3,3,{"anti-monster":2}])
-        self.melee_weapons5.append([1,5,2,8,3,3,{"devastating_wounds":True}])
-        self.melee_weapons5.append([1,5,2,8,3,3,{"hazardous":True}])
-        self.melee_weapons5.append([1,5,2,4,3,3,{"lance":True}])
-        self.melee_weapons5.append([1,5,2,8,3,3,{"lethal_hits":True}])
-        self.melee_weapons5.append([1,5,2,8,3,3,{"sustained_hits":1}])
-        self.melee_weapons5.append([1,5,2,4,3,3,{"twin-linked":True}])
-        self.melee_weapons5.append([1,"d6",2,8,3,3,{"psychic":True, }])
-        self.melee_weapons5.append([1,"d6+3",2,8,3,3,{"psychic":True, }])
+        self.ranged_weapons10 = []
+        match (meleewep):
+            case "hammer":
+                self.melee_weapons5=[[1,5,3,14,3,"d6+1",{"psychic": True}]]
+            case "flail":
+                self.melee_weapons5=[[1,10,2,5,1,2,{"psychic": True}]]
+            case "mace":
+                self.melee_weapons5=[[1,5,2,6,3,3,{"anti-character": 2, "psychic": True}]]
+            case "sword":
+                self.melee_weapons5=[[1,5,2,10,2,"d6",{"strike":True, "psychic": True}], [0,10,2,5,1,1,{"sweep":True, "psychic": True}]]
+            case _:
+                pass
+        for item in weapons:
+            match (item):
+                case "psycannon":
+                    self.ranged_weapons5.append([1,6,3,10,2,3,{"ignore_cover":True, "psychic": True}])
+                case "psilencer":
+                    self.ranged_weapons5.append([1,12,3,6,0,1,{"sustained_hits":1, "psychic": True}])
+                case "incinerator":
+                    self.ranged_weapons5.append([1,"2d6","torrent",6,1,1,{"ignore_cover":True}])
+                case "sublimator":
+                    self.ranged_weapons5.append([1,2,3,9,4,"d6",{"melta":4,"twin-linked":True, "psychic": True}])
+                case "fragstorm":
+                    self.ranged_weapons5.append([1,"d6",3,4,0,1,{"blast":True}])
+                case _:
+                    pass
+        if tech:
+            for item in self.melee_weapons5:
+                item[6]["+1_to_hit"]=True
+            for item in self.ranged_weapons5:
+                item[6]["+1_to_hit"]=True
+
+class GMNDK(NDK):
+    def __init__(self, meleewep:str|None=None, weapons:list[str|None]=[], cover: bool = False, stealth = False,tech = False):
+        super().__init__(meleewep, weapons, cover,stealth,tech = tech)
+        self.kw.append("character")
+        self.name = "Grandmaster is Nemesis Dreadknight"

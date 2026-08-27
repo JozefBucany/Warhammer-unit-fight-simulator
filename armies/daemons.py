@@ -16,48 +16,20 @@ class Base40k():
         self.fnp = 7
         self.fnpm = 7
         self.fnpp = 7
-        self.chan = False
-        self.flux = False
-        self.flam = False
-        self.fate = False
-        if chan:
-            self.chan = True
-        if flux:
-            self.flux = True
-        if flam:
-            self.flam = True
-        if fate:
-            self.fate = True
-        self.skmas = False
-        self.blmas = False
-        self.sktak = False
-        if skmas:
-            self.skmas = True
-        if blmas:
-            self.blmas = True
-        if sktak:
-            self.sktak = True
-        self.epitome = False
-        self.syll = False
-        self.trance = False
-        if epitome:
-            self.epitome = True
-        if syll:
-            self.syll = True
-        if trance:
-            self.trance = True
-        self.slop = False
-        self.spoil = False
-        self.pox = False
-        self.horti = False
-        if slop:
-            self.slop = True
-        if spoil:
-            self.spoil = True
-        if pox:
-            self.pox = True
-        if horti:
-            self.horti = True
+        self.chan = chan
+        self.flux = flux
+        self.flam = flam
+        self.fate = fate
+        self.skmas = skmas
+        self.blmas = blmas
+        self.sktak = sktak
+        self.epitome = epitome
+        self.syll = syll
+        self.trance = trance
+        self.slop = slop
+        self.spoil = spoil
+        self.pox = pox
+        self.horti = horti
 
     def __repr__(self):
         x = "================================================================\n"

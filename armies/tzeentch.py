@@ -107,8 +107,8 @@ class Flamers40k(Tzeentch40k):
         if flam:
             self.kw.append("character")
             self.melee_weapons5.append([1,4,4,5,0,1,{}])
-            self.ranged_weapons5.append([0,"2d6","torrent",5,1,1,{"not":True,"psychic":True,"ignore_cover":True}])
             self.ranged_weapons5.append([1,3,3,9,3,3,{"focused":True,"psychic":True,"ignore_cover":True}])
+            self.ranged_weapons5.append([0,"2d6","torrent",5,1,1,{"not":True,"psychic":True,"ignore_cover":True}])
 
 class Screamers40k(Tzeentch40k):
     def __init__(self, cover: bool = False, stealth = False, fate = False):
@@ -147,7 +147,7 @@ class Chariot40k(Tzeentch40k):
         self.invul = 4
         self.melee_weapons5 = [[1,6,4,5,0,1,{}],[1,6,3,6,2,2,{"anti-vehicle":True, "anti-monster":True}]]
         self.melee_weapons10 = []
-        self.ranged_weapons5 = [[0,"2d6","torrent",5,1,1,{"not":True,"psychic":True,"ignore_cover":True}], [1,3,3,9,3,3,{"focused":True,"psychic":True,"ignore_cover":True}]]
+        self.ranged_weapons5 = [[1,3,3,9,3,3,{"focused":True,"psychic":True,"ignore_cover":True}],[0,"2d6","torrent",5,1,1,{"not":True,"psychic":True,"ignore_cover":True}]]
         self.ranged_weapons10 = []
 
 class Changecaster40k(Tzeentch40k):
@@ -202,7 +202,7 @@ class Exaflam40k(Tzeentch40k):
         self.invul = 4
         self.melee_weapons5 = [[1,4,4,5,0,1,{}]]
         self.melee_weapons10 = []
-        self.ranged_weapons5 = [[0,"2d6","torrent",5,1,1,{"not":True,"psychic":True,"ignore_cover":True}], [1,3,3,9,3,3,{"focused":True,"psychic":True,"ignore_cover":True}]]
+        self.ranged_weapons5 = [[1,3,3,9,3,3,{"focused":True,"psychic":True,"ignore_cover":True}],[0,"2d6","torrent",5,1,1,{"not":True,"psychic":True,"ignore_cover":True}]]
         self.ranged_weapons10 = []
 
 class Fateskimmer40k(Tzeentch40k):
@@ -211,7 +211,7 @@ class Fateskimmer40k(Tzeentch40k):
         self.name = "FateSkimmer"
         self.kw.append("mounted")
         self.hp = 3
-        self.models = 3
+        self.models = 1
         self.toughness = 4
         self.save = 6
         self.invul = 4

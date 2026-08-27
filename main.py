@@ -1,90 +1,18 @@
 import attack
-from armies import GK, NDK, daemons, khorne, nurgle, slaanesh, tzeentch
+from armies import daemons, gk, khorne, nurgle, slaanesh, tzeentch
 
-"""
-===========================================================
-40k weapons and abilities:
-
-all units (where possible) have their dtasheet abilities implemented somehow (more on that later)
-if those abilities are "once per battle", such as Daemon prices' abilities, they ARE active
-
-units count as not having moved and in "good" spots, so:
-- ASSAULT ignored
-- RAPID FIRE always active
-- CONVERSION always active
-- HEAVY always active
-- MELTA always active
-- LANCE always active, all units count as having charged
-
-BLAST always counts maximum amount of target models (i.e. GK strike squad = 10, same as Khorne Bloodletters = 10)
-EXTRA ATTACKS implemented during unit creation, all weapons added to list
-FIRING DECK not used yet, but in future datasheets will be able to add desired infantry weapons during TRANSPORT creation
-ONESHOT ignored, weapons always fire
-PISTOL ignored (as all shooting is done outside of combat, pistol weapons are defined only if it's the only
-    weapon, or can be used. i.e. unit with 24" rapid fire weapons would never shoot with 12" pistol)
-PRECISION ignored, units are led just for attacks and buff purposes
-that said,if LEADER is attached to a unit, their attacks are added to the unit's weapons lists and, where possible,
-    their LADER abilities are activated (looking at you, Exalted Flamer)
-    - i made some LEADERs able to lead themselves for testing purposes, keeping this feature in the code,
-        use freely if desired (weapons are not duplicated in the process)
-INDIRECT ignored, targets always treated as visible
-aura abilities on some characters, such as Lord of Change, are always active on themselves
-    (uits have their abilities or weapons characteristics adjusted to represent this)
-weapons with multiple choices are marked with strike/sweep for melee and focused/not for shooting.
-    * during melee and shoot attacks results are calculated and printed separately.
-    * during all_in attack: shooting is printed as if shoot was used, but then
-        higher casualties/higher damage shooting result is chosen to overflow into melee
-        (normal attacs, strike and sweep all calculate with this better shooting result)
-
-ANTI-X checks working
-CRIT HITS and CRIT WOUNDS working
-DEVASTATING wounds working
-FEEL NO PAIN working (all 3 versions should work properly.
-    regular fnp, fnp against psychic attacks and fnp against mortals)
-HAZARDOUS working and reported after attacks
-IGNORE COVER working (cover defined during unit creation)
-LETHAL HITS working
-STEALTH working, defined during unit creation
-SUSTAINED HITS working
-TORRENT working
-TWIN-LINKED working
-
-!!!
-    note that many abilities were too hard (or useless) to code (cough... beast of nurgle... cough),
-so where there is no direct representation of these abilities behaviour, i took liberty of doing
-hard coded stuff (again, beast) or used aos abilities (i.e. GK panadins charge +1 dmg)
-    i also decided that abilities that work differently when "on objective" and such
-are always treated for better result (i.e. GK purifiers reroll ones, but reroll all wounds
-instead if attacking unit on an objective, so I just gave them twin-linked and call it done ;) )
-!!!
-
-===========================================================
-AOS weapon abilities:
-
-charge(+1 dmg) - always on, units are considered to have charged
-companion - ignored, no aura/leader buffs used in aos combat
-    (except units benefiting from their own buffs)
-shoot in combat - ignored, all shooting is considered to be out of combat
-
-anti-x(+1 rend) - working (note that anti-charge is ignored as we consider attacking units to charge)
-crit(2 hits) - working
-crit(auto-wound) - working
-crit(mortal) - working
-
-AOS CODE IMPLEMENTATION STARTED, BUT NO TESTS WERE MADE YET, USE AT YOUR OWN RISK
-===========================================================
-"""
 
 def main():
 
-    a= GK.StrikeSquad(["incinerator"],["incinerator"], cover = True, stealth = True)
-    b= GK.Purifiers(["psycannon", "psycannon"], ["psycannon", "psycannon"], cover = False, crowe = True)
-    c= GK.Interceptors(["psilencer"], ["psilencer"])
-    d= GK.Purgators(["incinerator","psilencer", "psycannon", "incinerator"])
-    x = GK.Terminator (["psycannon"], ["psycannon"],apothecary = True,libi = True)
-    y = GK.Paladin (["incinerator","incinerator"], ["incinerator","incinerator"], ancient_weapon = ["incinerator"],apothecary = True, cover = True, stealth = True, voldus = True)
-    n = NDK.NDK("sword", ["psycannon", "psilencer"])
-    gmndk = NDK.GMNDK("mace", ["incinerator", "sublimator"])
+    a= gk.StrikeSquad(["incinerator"],["incinerator"], cover = True, stealth = True)
+    b= gk.Purifiers(["psycannon", "psycannon"], ["psycannon", "psycannon"], cover = False, crowe = True)
+    c= gk.Interceptors(["psilencer"], ["psilencer"])
+    d= gk.Purgators(["incinerator","psilencer", "psycannon", "incinerator"])
+    x = gk.Terminator (["psycannon"], ["psycannon"],apothecary = True,libi = True)
+    y = gk.Paladin (["incinerator","incinerator"], ["incinerator","incinerator"], ancient_weapon = ["incinerator"],apothecary = True, cover = True, stealth = True, voldus = True)
+    n = gk.NDK("sword", ["psycannon", "psilencer"])
+    gmndk = gk.GMNDK("mace", ["incinerator", "sublimator"])
+
 
     print(a)
     attack.shoot(a,b)
@@ -108,9 +36,9 @@ def main():
     attack.shoot(n,d)
     attack.melee(n,d)
 
-    bc = GK.Brotherhood_Champion()
-    cc = GK.Castellan_Crowe()
-    tech = GK.Techmarine()
+    bc = gk.Brotherhood_Champion()
+    cc = gk.Castellan_Crowe()
+    tech = gk.Techmarine()
 
     print(bc)
     attack.shoot(bc,d)
@@ -127,30 +55,22 @@ def main():
     attack.melee(gmndk,d)
     attack.all_in(gmndk,d)
 
-    brocap = GK.Brother_Captain(captain = True)
-    libi = GK.Librarian(["combi-weapon"], libi = True)
-    gm = GK.Grandmaster(["psycannon"])
-    gmv = GK.GM_Voldus(voldus = True)
-    chap = GK.Chaplain()
+    brocap = gk.Brother_Captain(captain = True)
+    libi = gk.Librarian(["combi-weapon"], libi = True)
+    gm = gk.Grandmaster(["psycannon"])
+    gmv = gk.GM_Voldus(voldus = True)
+    chap = gk.Chaplain()
 
     print(brocap)
     attack.all_in(brocap,libi)
     print(libi)
-    attack.all_in(libi,gm)
+    attack.all_in(libi,gm,verbose = False)
     print(gm)
     attack.all_in(gm, gmv)
     print(gmv)
     attack.all_in(gmv,chap)
     print(chap)
     attack.all_in(chap, brocap)
-
-    test_unit = GK.TestUnit(captain = False)
-    print(test_unit)
-    attack.all_in(test_unit, d)
-    attack.all_in(test_unit, a)
-    attack.all_in(test_unit, x)
-    attack.all_in(test_unit, y)
-    attack.all_in(test_unit, n)
 
 
     bloodletters = khorne.Bloodletters40k(blmas=True)
@@ -425,8 +345,7 @@ def main():
 
     sg = daemons.SoulGrinder40k("sword","tzeentch")
     print(sg)
-    attack.all_in(sg, x)
-
+    attack.all_in(sg, sg,verbose = False)
 
 
 if __name__ == "__main__":

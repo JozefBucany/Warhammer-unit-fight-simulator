@@ -121,6 +121,8 @@ class Bloodthirster40k(Khorne40k):
                 self.melee_weapons5 = [[1,7,2,16,4,"d6+2",{"strike":True}], [0,14,2,10,2,2,{"sweep":True}]]
                 self.ranged_weapons5 = [[1,"d6","torrent",5,1,1,{"ignore_cover":True}]]
         self.name = "Bloodthirster"
+        for item in self.melee_weapons5:
+            item[6]["+1_to_hit"] = True
         self.kw.append("monster")
         self.kw.append("character")
         self.models = 1

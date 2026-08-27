@@ -134,7 +134,7 @@ class Enrapturess40k(Slaanesh40k):
         self.invul = 5
         self.melee_weapons5 = [[1,5,2,4,1,1,{"devastating_wounds":True}]]
         self.melee_weapons10 = []
-        self.ranged_weapons5 = [[0,6,3,6,0,1,{"not":True}],[1,1,3,12,3,"d6+1",{"focused":True}]]
+        self.ranged_weapons5 = [[1,1,3,12,3,"d6+1",{"focused":True}],[0,6,3,6,0,1,{"not":True}]]
         self.ranged_weapons10 = []
 
 class Syllesske40k(Slaanesh40k):
