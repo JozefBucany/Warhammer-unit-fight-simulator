@@ -86,30 +86,56 @@ Code can be launched by running python3 main.py, but is highly suggested to edit
 
 and now, how to use the code, if you are still interested:
 first you need to create a unit from a predefined class in armies folder
-i.e. `strike_squad = gk.StrikeSquad()`
-if you wish to add a special weapon to the unit, use lists for addind weapon to a 5 man group and 10 man group.
-i.e. `strike_squad = gk.StrikeSquad(["psycannon"],["psilencer"])` creates a unit of 5 models with 1 psycannon and additional 5 models with 1 psilencer
+
+`strike_squad = gk.StrikeSquad()`
+
+If you wish to add a special weapon to the unit, use lists for addind weapon to a 5 man group and 10 man group.
+
+`strike_squad = gk.StrikeSquad(["psycannon"],["psilencer"])`
+
+This creates a unit of 5 models with 1 psycannon and additional 5 models with 1 psilencer
 Different armies have different rules, so best way to figure out how to create an unit with special weapons, see the code itself. (in future, with more armies, i will describe how units work at the top of the army file itself)
 We need to use list even for one weapon, because strike squad is based on same code as other units to reduce duplicity, and others are able to equip more than 1 special weapon.
 i.e. Purifiers would be declared as 
+
 `gk.Purifiers(["psycannon", "psycannon"], ["psycannon", "psycannon"], crowe = True)`
-next, if the unit expects you to shoot at it, it may take cover by addind cover = True after the weapon lists, of even get stealth = True, for additional defensiveness.
+
+Next, if the unit expects you to shoot at it, it may take cover by addind cover = True after the weapon lists, of even get stealth = True, for additional defensiveness.
+
 `strike_squad = gk.StrikeSquad(["psycannon"],["psilencer"],cover = True, stealth = True)`
+
 Lastly, some units can be attached to a LEADER character. you do this by adding his argument (see armies for different arguments of different leaders) to the end...
-`strike_squad = gk.StrikeSquad(["psycannon"],["psilencer"],cover = True, stealth = True, tech = True)` adds techmarine to the strike squad to lead them. (he has no usable leader ability, but his melee and ranged weapons will be added to the weapons list and when the unit attacks, techmarine will attack with them).
 
-now that we have our unit created, let's get them something to charge to
+`strike_squad = gk.StrikeSquad(["psycannon"],["psilencer"],cover = True, stealth = True, tech = True)`
 
-`bloodletters = khorne.Bloodletters40k()` creates khorne bloodletters unit with 10 models. as they have no special weapons to choose from, we can maybe give them a leader.
-`bloodletters = khorne.Bloodletters40k(blmas = True)` adds Blood Master to lead them (during report of killed models after attacking, leaders not considered yet)
+This adds techmarine to the strike squad to lead them. (he has no usable leader ability, but his melee and ranged weapons will be added to the weapons list and when the unit attacks, techmarine will attack with them).
+
+Now that we have our unit created, let's get them something to charge to
+
+`bloodletters = khorne.Bloodletters40k()`
+
+... creates Khorne Bloodletters unit with 10 models. as they have no special weapons to choose from, we can maybe give them a leader.
+
+`bloodletters = khorne.Bloodletters40k(blmas = True)`
+
+adds Blood Master to lead them (during report of killed models after attacking, leaders not considered yet)
 
 Now we have out 2 units, we can start fighting.
 Attack abilities are defined in an imported attack.py file. we can shoot, melee, or all_in our targets.
 syntax is simple and same for all
-`attack.shoot(strike_squad, bloodletters)` shoots all ranged weapons in strike squad at bloodletters and they try to save themselves, using all abilities and/or buffs they might have. at the end, report is made of how much damage we were abe to deal and how many models died.
-`attack.melee(strike_squad, bloodletters)` does the same, but unit charges and attacks with melee weapons.
+
+`attack.shoot(strike_squad, bloodletters)`
+
+shoots all ranged weapons in strike squad at bloodletters and they try to save themselves, using all abilities and/or buffs they might have. at the end, report is made of how much damage we were abe to deal and how many models died.
+
+`attack.melee(strike_squad, bloodletters)`
+
+does the same, but unit charges and attacks with melee weapons.
 and if we really REALLY want them dead, we can
-`attack.all_in(strike_squad, bloodletters)` this will shoot at them, remember amount od damage and casualties, and charge into melee fight straight after the shooting, reporting total amount of damage and dead models.
+
+`attack.all_in(strike_squad, bloodletters)`
+
+this will shoot at them, remember amount od damage and casualties, and charge into melee fight straight after the shooting, reporting total amount of damage and dead models.
 
 Remember! in Warhammer 40k, additional damage after killing a model is lost, so attacking 1 healt bloodletters with 2 damage weapon still kills just 1 model, so more often than not, you may see stuff like "dealt 12 damage, 2 models die"
 
