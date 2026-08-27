@@ -81,7 +81,7 @@ AOS CODE IMPLEMENTATION STARTED, BUT NO TESTS WERE MADE YET, USE AT YOUR OWN RIS
 
 =========================================================
 
-** HOW TO USE**
+**HOW TO USE**
 
 Code can be launched by running python3 main.py, but is highly suggested to edit main.py before first start, as there is **A LOT** of units there for testing purposes and results in printing a wall of text to the terminal
 
