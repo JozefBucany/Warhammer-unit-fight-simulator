@@ -4,6 +4,8 @@ You probably know resources, which can tell you how much damage can you expect f
 **My first python project on boot.dev learning site.**
 This program takes 2 of my favorite armies to take the heck out of each other in a totally random environment. all rolls, all checks, are done by "random" module and no "averages" are considered here.
 
+For simplicity i am using 10th edition rules and for AoS armies 4th edition will be used.
+
 
 **Basics**
 
@@ -116,6 +118,7 @@ Now that we have our unit created, let's get them something to charge to
 `bloodletters = khorne.Bloodletters40k()`
 
 ... creates Khorne Bloodletters unit with 10 models. as they have no special weapons to choose from, we can maybe give them a leader.
+the 40k at the end just differentiates it from another BloodlettersAoS class, which will be created later
 
 `bloodletters = khorne.Bloodletters40k(blmas = True)`
 
